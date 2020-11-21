@@ -2,7 +2,7 @@
 
 ## Purpose ##
 Read OSC data from Mind Monitor to PC 
-and convert the brainwave data to audio.
+and convert the brainwave data to audio for real-time feedback.
 
 ## Features ##
 * Generate sound for each brainwave type
