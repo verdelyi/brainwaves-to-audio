@@ -14,6 +14,7 @@ application.mainClass.set("main.Main")
 
 dependencies {
     implementation("com.illposed.osc:javaosc-core:0.7")
+    implementation("org.apache.commons:commons-math3:3.6.1")
 }
 
 val fatJar = task("fatJar", type = Jar::class) {

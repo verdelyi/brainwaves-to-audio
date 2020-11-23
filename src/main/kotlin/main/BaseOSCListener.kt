@@ -10,10 +10,6 @@ abstract class BaseOSCListener(
     val oscPattern: String
 ) : OSCMessageListener {
 
-    protected val signalGenerator = SineGenerator(
-        amplitude = 0.1, currentFreq = 440.0, sampleRate = Config.playerSamplingRate
-    )
-
     var timeStamp: Instant? = null
         private set
     var message: OSCMessage? = null
@@ -50,11 +46,7 @@ abstract class BaseOSCListener(
             } else null
         }
 
-    fun startPlayer() {
-        thread {
-            SoundPlayer(signalGenerator).Start()
-        }
-    }
+    abstract fun initialize()
 
     abstract fun update()
 }

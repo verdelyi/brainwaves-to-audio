@@ -1,5 +1,9 @@
 package main
 
+import java.io.PrintWriter
+import kotlin.concurrent.thread
+import kotlin.system.exitProcess
+
 class GammaListener : BrainwaveOSCListener(
     tag = "[Gamma]",
     symbol = "G",
@@ -56,6 +60,15 @@ class DeltaListener : BrainwaveOSCListener(
 }
 
 class BlinkListener : BaseOSCListener(oscPattern = "/muse/elements/blink") {
+
+    protected val signalGenerator: SineGenerator = SineGenerator(
+        amplitude = 0.1, currentFreq = 440.0, sampleRate = Config.playerSamplingRate
+    )
+
+    override fun initialize() {
+        thread { SoundPlayer(signalGenerator).Start() }
+    }
+
     override fun update() {
         val arg = messageArgumentsAsString
         if (arg != null) {
@@ -69,6 +82,15 @@ class BlinkListener : BaseOSCListener(oscPattern = "/muse/elements/blink") {
 }
 
 class JawClenchListener : BaseOSCListener(oscPattern = "/muse/elements/jaw_clench") {
+
+    protected val signalGenerator: SineGenerator = SineGenerator(
+        amplitude = 0.1, currentFreq = 440.0, sampleRate = Config.playerSamplingRate
+    )
+
+    override fun initialize() {
+        thread { SoundPlayer(signalGenerator).Start() }
+    }
+
     override fun update() {
         val arg = messageArgumentsAsString
         if (arg != null) {
@@ -82,6 +104,15 @@ class JawClenchListener : BaseOSCListener(oscPattern = "/muse/elements/jaw_clenc
 }
 
 class TouchingForeheadListener : BaseOSCListener(oscPattern = "/muse/elements/touching_forehead") {
+
+    private val signalGenerator: SineGenerator = SineGenerator(
+        amplitude = 0.1, currentFreq = 440.0, sampleRate = Config.playerSamplingRate
+    )
+
+    override fun initialize() {
+        thread { SoundPlayer(signalGenerator).Start() }
+    }
+
     override fun update() {
         val arg = messageArgumentsAsString
         if (arg != null) {
@@ -99,6 +130,15 @@ class TouchingForeheadListener : BaseOSCListener(oscPattern = "/muse/elements/to
 }
 
 class HorseShoeListener : BaseOSCListener(oscPattern = "/muse/elements/horseshoe") {
+
+    private val signalGenerator: SineGenerator = SineGenerator(
+        amplitude = 0.1, currentFreq = 440.0, sampleRate = Config.playerSamplingRate
+    )
+
+    override fun initialize() {
+        thread { SoundPlayer(signalGenerator).Start() }
+    }
+
     override fun update() {
         val arg = messageArgumentsAsDouble
         if (arg != null) {
@@ -110,6 +150,38 @@ class HorseShoeListener : BaseOSCListener(oscPattern = "/muse/elements/horseshoe
                 signalGenerator.amplitude = 1.0
                 println(arg.contentToString())
             }
+        }
+    }
+}
+
+class RawEEGListener : BaseOSCListener(oscPattern = "/muse/eeg") {
+    //private val signalGenerator = RawEEGSignalGenerator()
+    private var counter = 0
+
+    private val pw = PrintWriter("raweeg.txt").apply {
+        println("TP9, AF7, AF8, TP10, AUX")
+    }
+
+    override fun initialize() {
+        /*thread {
+            try {
+                SoundPlayer(signalGenerator).Start()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                exitProcess(1)
+            }
+        }*/
+    }
+
+    override fun update() {
+        val arg = messageArgumentsAsDouble
+        if (arg != null) {
+            check(arg.size >= 4)
+            //val sample = (arg[0] - 800) / 900.0
+            //signalGenerator.addSample(sample)
+            pw.println(arg.joinToString())
+            println("[Count $counter] ${arg.contentToString()}")
+            counter++
         }
     }
 }

@@ -1,5 +1,6 @@
 package main
 
+import kotlin.concurrent.thread
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -9,9 +10,17 @@ abstract class BrainwaveOSCListener(
     oscPattern: String
 ) : BaseOSCListener(oscPattern) {
 
+    protected val signalGenerator: SineGenerator = SineGenerator(
+        amplitude = 0.1, currentFreq = 440.0, sampleRate = Config.playerSamplingRate
+    )
+
     private fun bars(n: Double, symbol: String): String {
         val convertedAmplitude = ((n + 5) * 7).roundToInt()
         return (1..convertedAmplitude).joinToString("") { symbol }
+    }
+
+    override fun initialize() {
+        thread { SoundPlayer(signalGenerator).Start() }
     }
 
     override fun update() {

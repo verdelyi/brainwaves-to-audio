@@ -6,15 +6,15 @@ import javax.sound.sampled.DataLine
 import javax.sound.sampled.SourceDataLine
 
 
-class SoundPlayer(val siggen: SineGenerator) {
+class SoundPlayer(private val signalGenerator: SignalGenerator) {
+    private val bufSize = 8000
     var sndOut: SourceDataLine? = null
 
     fun Start() {
         try {
             sndOut!!.start()
-            val bufSize = 8000
             while (true) {
-                val sig = (1..bufSize).map { siggen.generateSignal() }
+                val sig = (1..bufSize).map { signalGenerator.generateSignal() }
                 val sigBytes = sig.map { (it * 127).toInt().toByte() }.toByteArray()
                 sndOut!!.write(sigBytes, 0, sigBytes.size)
             }

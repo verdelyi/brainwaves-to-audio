@@ -13,7 +13,12 @@ object Main {
 
         val oscReceiver = OSCPortIn(Config.udpPort)
         val listeners = listOf(
-            GammaListener(), BetaListener(), AlphaListener(), ThetaListener(), DeltaListener(),
+            GammaListener(),
+            BetaListener(),
+            AlphaListener(),
+            ThetaListener(),
+            DeltaListener(),
+            RawEEGListener(), // EXPERIMENTAL, NOT USEFUL YET
             BlinkListener(), JawClenchListener(),
             HorseShoeListener(), TouchingForeheadListener()
         )
@@ -21,13 +26,12 @@ object Main {
         // Initialize and register all listeners
         listeners.forEach { listener ->
             oscReceiver.dispatcher.addListener(OSCPatternAddressMessageSelector(listener.oscPattern), listener)
-            listener.startPlayer()
+            listener.initialize()
         }
 
         oscReceiver.startListening()
         while (true) {
             listeners.forEach { it.update() }
-            Thread.sleep(50)
         }
         oscReceiver.stopListening()
     }
